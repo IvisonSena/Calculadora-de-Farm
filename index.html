@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Calculator - Cabal Online</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        input.color-branco { color: #fff; background-color: rgba(255,255,255,0.1); }
+        input.color-amarelo { color: #ffff00; background-color: rgba(255,255,0,0.1); }
+        input.color-ciano { color: #00ffff; background-color: rgba(0,255,255,0.1); }
+        input.color-verde { color: #00ff00; background-color: rgba(0,255,0,0.1); }
+        input.color-laranja { color: #ffa500; background-color: rgba(255,165,0,0.1); }
+        input.color-azul { color: #00aaff; background-color: rgba(0,170,255,0.1); }
+        input.color-verdeclaro { color: #7CFC00; background-color: rgba(124,252,0,0.1); }
+        input.color-rosaescuro { color: #FF1493; background-color: rgba(255,20,147,0.1); }
+    </style>
+</head>
+<body>
+
+<h1>⚔️ Farm Calculator - Cabal Online</h1>
+<p>Gerencie seus farms e calcule seus lucros com precisão.</p>
+
+<div class="container">
+<div class="main">
+
+    <!-- Gerenciar Atividades -->
+    <div class="box">
+        <h2> Gerenciar Atividades</h2>
+        <label>Tipo de Atividade:</label>
+        <input type="text" id="tipoAtividadeInput" placeholder="Ex: DG, DX, Evento">
+        <button onclick="adicionarTipoAtividade()">+ Adicionar Tipo</button><br>
+
+        <label>Tipo:</label>
+        <select id="tipoAtividadeSelect">
+            <option>Selecione...</option>
+        </select><br>
+
+        <label>Nome da Atividade:</label>
+        <input type="text" id="nomeAtividadeInput" placeholder="Ex: DG, DX"><br>
+
+        <label>Custo Padrão (Alz):</label>
+        <input type="number" id="custoAtividadeInput" placeholder="Ex: 1000 Alz"><br>
+
+        <label>Imagem:</label>
+        <input type="file" id="imagemAtividade"><br>
+
+        <button onclick="salvarAtividade()">💾 Salvar Atividade</button>
+    </div>
+
+    <!-- Gerenciar Itens -->
+    <div class="box">
+        <h2> Gerenciar Itens Dropados</h2>
+        <label>Nome do Item:</label>
+        <input type="text" id="nomeItemInput" placeholder="Ex: App, Anel, Brinco"><br>
+
+        <label>Valor Padrão (Alz):</label>
+        <input type="number" id="valorItemInput" placeholder="Ex: 1000 Alz"><br>
+
+        <label>Imagem:</label>
+        <input type="file" id="imagemItem"><br>
+
+        <button onclick="salvarItem()">➕ Adicionar Item</button>
+    </div>
+
+    <!-- Calcular Farm -->
+    <div class="box">
+        <h2> Calcular Farm</h2>
+        
+        <h3>✅ Custos de Entrada</h3>
+        <label>Entranda/Item:</label>
+        <select id="entradaSelect">
+            <option>Selecione...</option>
+        </select><br>
+
+        <label>Quantidade:</label>
+        <input type="number" id="entradaQtd" value="1"><br>
+
+        <label>Valor Unitário (Alz):</label>
+        <input type="number" id="entradaValor"><br>
+
+        <button onclick="adicionarEntrada()">➕ Adicionar Custo</button>
+
+        <table id="tabelaEntradas">
+            <tr><th>Item</th><th>Qtd</th><th>V. Unitário</th><th>Total</th><th>Ações</th></tr>
+        </table>
+
+        <h3>💎 Drops Obtidos</h3>
+        <label>Item:</label>
+        <select id="dropSelect">
+            <option>Selecione...</option>
+        </select><br>
+
+        <label>Quantidade:</label>
+        <input type="number" id="dropQtd" value="1"><br>
+
+        <label>Valor Unitário (Alz):</label>
+        <input type="number" id="dropValor"><br>
+
+        <button onclick="adicionarDrop()">➕ Adicionar Drop</button>
+
+        <table id="tabelaDrops">
+            <tr><th>Item</th><th>Qtd</th><th>V. Unitário</th><th>Total</th><th>Ações</th></tr>
+        </table>
+    </div>
+
+    <!-- Adicionar após a seção "Calcular Farm", antes do "Resumo do Farm": -->
+    <div class="box">
+        <h2>⚙️ Gerenciar Listas</h2>
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <button onclick="mostrarAbaGerenciar('atividades')" id="btnAbaAtividades" style="flex: 1;">
+                📋 Gerenciar Atividades
+            </button>
+            <button onclick="mostrarAbaGerenciar('itens')" id="btnAbaItens" style="flex: 1;">
+                💎 Gerenciar Itens
+            </button>
+            <button onclick="recolherAbas()" id="btnRecolher" style="background: #e74c3c; color: white;">
+                ❌ Fechar
+            </button>
+        </div>
+        
+        <!-- Aba Atividades -->
+        <div id="abaAtividades" style="display: none;">
+            <h3>📋 Lista de Atividades</h3>
+            <div id="listaAtividades"></div>
+        </div>
+        
+        <!-- Aba Itens -->
+        <div id="abaItens" style="display: none;">
+            <h3>💎 Lista de Itens</h3>
+            <div id="listaItens"></div>
+        </div>
+    </div>
+
+    <!-- Resumo Financeiro -->
+    <div class="box">
+        <h2>📜 Resumo do Farm</h2>
+        <div id="resumoFarm"></div><br>
+
+        <label>Nome do Farm:</label>
+        <input type="text" id="nomeFarmInput" placeholder="Ex: Farm Chaos Core"><br>
+
+        <label>Observações:</label>
+        <textarea id="observacoesFarm" placeholder="Ex: Farm feito em grupo, dropou itens raros, demorou 2 horas..." rows="3" style="width: 100%; resize: vertical; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: Arial, sans-serif;"></textarea><br>
+
+        <label>Data:</label>
+        <input type="date" id="dataFarm"><br>
+
+        <button onclick="salvarFarm()">💾 Salvar Farm</button>
+        <button onclick="limparFarm()">🗑️ Limpar Dados</button>
+    </div>
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar">
+
+    <div class="box">
+        <h3> Farms Salvos</h3>
+        <div id="listaFarms"></div>
+    </div>
+
+    <div class="box">
+        <h3>📅 Lucro por Período</h3>
+        <label>Data Início:</label>
+        <input type="date" id="dataInicio"><br>
+
+        <label>Data Fim:</label>
+        <input type="date" id="dataFim"><br>
+
+        <button onclick="calcularPeriodo()">📊 Calcular Período</button>
+        <div id="resultadoPeriodo"></div>
+    </div>
+
+    <div class="box">
+        <h3>🔧 Ferramentas</h3>
+        <button onclick="mostrarEstatisticas()" class="tool-btn">📊 Estatísticas</button>
+        <button onclick="mostrarDicas()" class="tool-btn">💡 Dicas de Uso</button>
+        <button onclick="exportarDados()" class="tool-btn">📤 Exportar Backup</button>
+        <input type="file" id="importFile" accept=".json" onchange="importarDados(event)" style="display: none;">
+        <button onclick="document.getElementById('importFile').click()" class="tool-btn">📥 Importar Backup</button>
+        <button onclick="limparTodosDados()" class="tool-btn danger">🗑️ Limpar Tudo</button>
+    </div>
+
+</div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
